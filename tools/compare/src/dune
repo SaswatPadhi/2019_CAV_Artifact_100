@@ -1,0 +1,9 @@
+(env
+    (debug (ocamlopt_flags (:standard -g -Oclassic)))
+    (_ (ocamlopt_flags (:standard -O3 -rounds 6))))
+
+(executables
+    (names Transform Verify)
+    (public_names transform verify)
+    (libraries core core_extended)
+    (preprocess (pps ppx_compare ppx_sexp_conv)))

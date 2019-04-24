@@ -1,0 +1,27 @@
+opam-version: "2.0"
+
+name: "LoopInvGen"
+version: "0.6b"
+synopsis: "A loop invariant generator for program verification"
+
+maintainer: "Saswat Padhi <saswat.sourav@gmail.com>"
+authors: "Saswat Padhi <saswat.sourav@gmail.com>"
+homepage: "http://saswatpadhi.github.io/"
+
+bug-reports: "https://github.com/SaswatPadhi/LoopInvGen/issues"
+license: "MIT"
+dev-repo: "git+https://github.com:SaswatPadhi/LoopInvGen.git"
+
+build: [
+  [ "dune" "build" "@NoLog" ]
+  [ "dune" "build" "-p" name "-j" jobs "--profile" "optimize" ]
+	[ "dune" "build" "test/Runner.exe" ]
+]
+
+depends: [
+  "ocaml"         {>= "4.04.2"}
+  "dune"          {>= "1.1.1" & build}
+  "alcotest"      {>= "0.7" & with-test}
+  "core"          {>= "0.11"}
+  "core_extended" {>= "0.11"}
+]

@@ -1,0 +1,83 @@
+diff -Naur LoopInvGen+HE/src/LIG.ml LIG+HE/src/LIG.ml
+--- LoopInvGen+HE/src/LIG.ml	2019-02-23 23:55:33.898855986 +0530
++++ LIG+HE/src/LIG.ml	2019-02-24 02:27:53.579054810 +0530
+@@ -93,47 +93,14 @@
+                                  (simulate_from sygus z3 head))))
+         ~conf (restarts_left - 1) sygus (seed_string ^ "#") z3 stats
+     end
+-  in match (
+-    if sygus.post_func.expressible
+-    then (Log.info (lazy "Starting with initial invariant = postcondition.")
+-         ; (None, sygus.post_func.body))
+-    else begin ZProc.create_scope z3
+-      ; Log.warn (lazy "Postcondition is not expressive within the provided grammar!")
+-      ; let inv, vpie_stats =
+-          VPIE.learnVPreCond
+-            ~z3 ~conf:conf._VPIE ~consts:sygus.constants
+-            ~post_desc:sygus.post_func.body
+-            ~eval_term:(if not (conf.model_completion_mode = `UsingZ3)
+-                        then "true" else sygus.post_func.body)
+-            (Job.create_positive states
+-               ~f:(ZProc.constraint_sat_function
+-                     (if String.is_prefix sygus.post_func.body ~prefix:"("
+-                      then ("(not " ^ sygus.post_func.body ^ ")")
+-                      else ("(not (" ^ sygus.post_func.body ^ "))"))
+-                     ~z3 ~arg_names:(List.map sygus.synth_variables ~f:fst))
+-               ~args: sygus.synth_variables
+-               ~post: (fun _ res -> res = Ok (Value.Bool false)))
+-         in stats.lig_time_ms <- stats.lig_time_ms +. vpie_stats.vpi_time_ms
+-          ; stats.lig_ce <- stats.lig_ce + vpie_stats.vpi_ce
+-          ; stats._VPIE <- vpie_stats :: stats._VPIE
+-          ; ZProc.close_scope z3
+-          ; ((ZProc.implication_counter_example z3 sygus.pre_func.body inv), inv)
+-      end
+-  ) with Some ce, _
+-         -> restart_with_new_states
+-               (random_value ~seed:(`Deterministic seed_string)
+-                             (gen_state_from_model sygus (Some ce)))
+-       | None, inv
+-         -> Log.info (lazy ("Starting with the following initial invariant:"
+-                           ^ (Log.indented_sep 4) ^ inv))
+-          ; match satisfyTrans ~conf ~sygus ~states ~z3 inv stats with
+-            | inv, None
+-              -> if inv <> "false" then ((ZProc.simplify z3 inv), stats)
+-                  else restart_with_new_states (random_value ~seed:(`Deterministic seed_string)
+-                                                            (gen_pre_state ~use_trans:true sygus z3))
+-            | _, (Some ce_model)
+-              -> restart_with_new_states (random_value ~seed:(`Deterministic seed_string)
+-                                                        (gen_state_from_model sygus (Some ce_model)))
++  in match satisfyTrans ~conf ~sygus ~states ~z3 sygus.post_func.body stats with
++     | inv, None
++       -> if inv <> "false" then ((ZProc.simplify z3 inv), stats)
++          else restart_with_new_states (random_value ~seed:(`Deterministic seed_string)
++                                                     (gen_pre_state ~use_trans:true sygus z3))
++     | _, (Some ce_model)
++       -> restart_with_new_states (random_value ~seed:(`Deterministic seed_string)
++                                                (gen_state_from_model sygus (Some ce_model)))
+ 
+ let learnInvariant ?(conf = default_config) ~(states : Value.t list list)
+                    ~(zpath : string) (sygus : SyGuS.t) : Job.desc * stats =
+diff -Naur LoopInvGen+HE/src/Synthesizer.ml LIG+HE/src/Synthesizer.ml
+--- LoopInvGen+HE/src/Synthesizer.ml	2019-02-23 23:55:33.718859887 +0530
++++ LIG+HE/src/Synthesizer.ml	2019-02-24 02:28:03.298648294 +0530
+@@ -18,7 +18,7 @@
+   cost_attribute = Size ;
+   cost_function = (fun g_cost e_cost -> (Int.to_float e_cost) *. (Float.log (Int.to_float g_cost))) ;
+   logic = Logic.of_string "LIA" ;
+-  max_level = 6 ;
++  max_level = 4 ;
+ }
+ 
+ type task = {
+diff -Naur LoopInvGen+HE/build_all.sh LIG+HE/build_all.sh
+--- LoopInvGen+HE/build_all.sh	2019-02-23 23:57:33.603237607 +0530
++++ LIG+HE/build_all.sh	2019-02-24 02:27:11.168437425 +0530
+@@ -102,7 +102,7 @@
+ TESTCASE_NAME="`basename "$TESTCASE" "$SYGUS_EXT"`"
+ 
+ RECORD_FORKS=4
+-RECORD_TIMEOUT=0.33s
++RECORD_TIMEOUT=0.25s
+ RECORD_STATES_PER_FORK=256
+ 
+ _bin/lig-process -o $TESTCASE_NAME.pro $TESTCASE >&2 || exit 1

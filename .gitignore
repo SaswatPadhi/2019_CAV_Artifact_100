@@ -1,3 +1,7 @@
+_.*_
+tools/*
+!tools/compare
+
 *.annot
 *.cmo
 *.cma

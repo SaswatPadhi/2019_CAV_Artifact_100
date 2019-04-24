@@ -1,0 +1,24 @@
+opam-version: "2.0"
+
+name: "Transform"
+version: "0.6b"
+synopsis: "A tool for making simple transformations to SyGuS benchmarks."
+
+maintainer: "Saswat Padhi <saswat.sourav@gmail.com>"
+authors: "Saswat Padhi <saswat.sourav@gmail.com>"
+homepage: "http://saswatpadhi.github.io/"
+
+bug-reports: "https://github.com/SaswatPadhi/LoopInvGen/issues"
+license: "MIT"
+dev-repo: "git+https://github.com:SaswatPadhi/LoopInvGen.git"
+
+build: [
+  [ "dune" "build" "-p" name "-j" jobs "--profile" "optimize" ]
+]
+
+depends: [
+  "ocaml"         {>= "4.04.2"}
+  "dune"          {>= "1.1.1" & build}
+  "core"          {>= "0.11"}
+  "core_extended" {>= "0.11"}
+]
