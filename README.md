@@ -42,4 +42,6 @@ See [LoopInvGen](../../../LoopInvGen) repository for instructions on using docke
 
 ## LICENSE
 
-The code in this repository, LoopInvGen and LoopInvGen+HE are all licensed under the [MIT License](LICENSE.md).
+The code in this repository, LoopInvGen and LoopInvGen+HE are all licensed under the [MIT License](LICENSE).
+
+Copyrights for CVC4, EUSolver, SketchAC and Stoch (included in the VM image) are property of their respective owners.
