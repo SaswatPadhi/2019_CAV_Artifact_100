@@ -54,7 +54,7 @@ reported in the CAV'19 paper titled "_Overfitting in Synthesis: Theory and Pract
     - Fig.7(a) @ `_output_/Fig_7a_LoopInvGen_PLearn.pdf`
     - Fig.7(b) @ `_output_/Fig_7b_CVC4_PLearn.pdf`
     - Fig.7(c) @ `_output_/Fig_7c_Stoch_PLearn.pdf`
-    - Fig.7(d) @ `_output_/Fig_7d_SketcAC_PLearn.pdf`
+    - Fig.7(d) @ `_output_/Fig_7d_SketchAC_PLearn.pdf`
     - Fig.7(e) @ `_output_/Fig_7e_EUSolver_PLearn.pdf`
     - Fig.8(a) @ `_output_/Fig_8a_PLearn_vs_HE.pdf`
     - Data for Fig.8(b) @ `_output_/Fig_8b_performance_report.txt`
@@ -172,7 +172,7 @@ timeout 30 ./tools/_LoopInvGen.Octagons_/loopinvgen.sh benchmarks/set_logic_XIA/
 #### &nbsp; &rArr; &nbsp; LoopInvGen+HE&thinsp;:
 
 - The source code for _LoopInvGen+HE_ is available in `~/CAV_100/base-LIG/LoopInvGen+HE`. The `Synthesizer.ml` file implements the _HEnum_ and `Divide` algorithms described in our paper (Algorithm 2).
-- _LoopInvGen+HE_ takes a `-L` or `--level` argument that controls the grammar that is explored. As we define in the paper, this value ranges from 0 = Equalities to 6 = Peano
+- _LoopInvGen+HE_ takes a `-L` or `--level` argument that controls the grammar that is explored. As we define in the paper, this value ranges from 1 = Equalities to 6 = Peano
 
 ##### Infer Invariant for a Single Problem
 
